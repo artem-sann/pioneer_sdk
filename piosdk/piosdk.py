@@ -331,7 +331,7 @@ class Pioneer:
                 0,  # param5
                 0,  # param6
                 0)  # param7
-            ack = self.__get_ack(0.5)
+            ack = self.__get_ack(0.25)
             if ack is not None:
                 if ack[0] and ack[1] == mavutil.mavlink.MAV_CMD_NAV_TAKEOFF:
                     if self.__logger:
@@ -339,11 +339,11 @@ class Pioneer:
                     return True
                 else:
                     i += 1
-                    if i > 15:
+                    if i > 100:
                         return False
             else:
                 i += 1
-                if i > 15:
+                if i > 100:
                     return False
 
     def land(self):
@@ -363,7 +363,7 @@ class Pioneer:
                 0,  # param5
                 0,  # param6
                 0)  # param7
-            ack = self.__get_ack(0.5)
+            ack = self.__get_ack(0.25)
             if ack is not None:
                 if ack[0] and ack[1] == mavutil.mavlink.MAV_CMD_NAV_LAND:
                     if self.__logger:
@@ -371,11 +371,11 @@ class Pioneer:
                     return True
                 else:
                     i += 1
-                    if i > 15:
+                    if i > 100:
                         return False
             else:
                 i += 1
-                if i > 15:
+                if i > 100:
                     return False
 
     def reboot_board(self):
