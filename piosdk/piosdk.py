@@ -959,3 +959,24 @@ class Pioneer:
 
         self.land()
 
+
+
+    def get_piro_sensor_data(self, blocking=False):
+        """ Возвращает температуру с пирометра """
+        piro_sensor_data = self.__mavlink_socket.recv_match(type='DISTANCE_SENSOR', blocking=blocking,
+                                                            timeout=self.__ack_timeout)
+        if not piro_sensor_data:
+            return None
+        if piro_sensor_data.get_type() == "BAD_DATA":
+            if mavutil.all_printable(piro_sensor_data.data):
+                sys.stdout.write(piro_sensor_data.data)
+                sys.stdout.flush()
+                return None
+        else:
+            # Если данные от пирометра
+            if piro_sensor_data.type == mavutil.mavlink.MAV_DISTANCE_SENSOR_UNKNOWN:
+                current_temp = piro_sensor_data.current_distance
+
+                if self.__logger:
+                    print("get temp piro sensor data: %5.2f C" % piro_sensor_data)
+                return current_temp
