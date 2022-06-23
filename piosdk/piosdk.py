@@ -977,6 +977,4 @@ class Pioneer:
             if piro_sensor_data.type == mavutil.mavlink.MAV_DISTANCE_SENSOR_UNKNOWN:
                 current_temp = piro_sensor_data.current_distance
 
-                if self.__logger:
-                    print("get temp piro sensor data: %5.2f C" % piro_sensor_data)
                 return current_temp
