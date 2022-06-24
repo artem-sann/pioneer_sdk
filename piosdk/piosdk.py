@@ -136,7 +136,6 @@ class Pioneer:
         command_ack = self.__mavlink_socket.recv_match(type='COMMAND_ACK', blocking=True,
                                                        timeout=timeout)
         if command_ack is not None:
-            print(command_ack)
             if command_ack.get_type() == 'COMMAND_ACK':
 
                 if command_ack.result == 0:  # MAV_RESULT_ACCEPTED
