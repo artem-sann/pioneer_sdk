@@ -674,7 +674,7 @@ class Pioneer:
         position = self.__mavlink_socket.recv_match(type='LOCAL_POSITION_NED', blocking=blocking,
                                                     timeout=self.__ack_timeout)
         if not position:
-            return None
+            return [None]
         if position.get_type() == "BAD_DATA":
             if mavutil.all_printable(position.data):
                 sys.stdout.write(position.data)
@@ -799,6 +799,7 @@ class Pioneer:
             return False
         else:
             if ack._header.srcComponent == 1:
+                print(ack)
                 return True
         if ack.get_type() == "BAD_DATA":
             if mavutil.all_printable(ack.data):
@@ -949,7 +950,8 @@ class Pioneer:
                     callback()
 
                 current_point = points.pop(0)
-                self.go_to_local_point(x=current_point['x'], y=current_point['y'] * -1, z=current_point['z'] * -1 + 1, yaw=0,
+                self.go_to_local_point(x=current_point['x'], y=current_point['y'] * -1, z=current_point['z'] * -1 + 1,
+                                       yaw=0,
                                        vx=0.1, vy=0.1, vz=0.1)
             time.sleep(0.1)
 
@@ -957,8 +959,6 @@ class Pioneer:
             finish_event()
 
         self.land()
-
-
 
     def get_piro_sensor_data(self, blocking=False):
         """ Возвращает температуру с пирометра """
@@ -977,3 +977,23 @@ class Pioneer:
                 current_temp = piro_sensor_data.current_distance
 
                 return current_temp
+
+    def fire_detection(self, sim=True):
+        """ Мигание красной индикацией """
+        if sim:
+            flasher_thread = threading.Thread(target=self.flasher)
+            flasher_thread.start()
+            print('flasher')
+        else:
+            self.led_custom(mode=2, color1=[255, 0, 0], timer=5)
+
+    def flasher(self, color=[255, 0, 0], t=5, period=0.5):
+        t_start = time.time()
+        while True:
+            self.led_control(255, color[0], color[1], color[2])
+            time.sleep(period)
+            self.led_control(255, 0, 0, 0)
+            time.sleep(period)
+            if time.time() - t_start >= t:
+                print("flasher stop")
+                return
